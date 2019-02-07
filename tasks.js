@@ -32,4 +32,16 @@ app.get('/tasks', function (request, response) {
   response.json(taskList);
 })
 
+app.delete('/tasks/:taskId', function (request, response) {
+
+  const taskIdToBeDeleted = request.params.taskId;
+
+  const someResponse = {
+    message: "You executed a delete request for ID: " + taskIdToBeDeleted
+  };
+
+  response.json(someResponse);
+
+});
+
 module.exports.handler = serverless(app);
