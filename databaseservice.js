@@ -24,10 +24,11 @@ function getTasks() {
             }
         });
     });
+}
 
     function deleteTasks(taskId) {
         const connection = getDatabaseConnection();
-        
+
         return new Promise(function(resolve, reject) {
             connection.query("DELETE FROM Tasks WHERE TaskId =?", taskId, function(error, results, fields) {
                 if (error) {
@@ -41,7 +42,30 @@ function getTasks() {
             });
         });
 }
-}
+
+    function saveTasks(description){
+        const connection = getDatabaseConnection(); 
+
+        return new Promise(function(resolve, reject) {
+
+            const postData = {
+                description: description,
+                completed: false,
+                userId: 1
+            }
+
+            connection.query("INSERT INTO Tasks SET ?", postData, function(error, results, fields) {
+                if (error) {
+                    connection.destroy();
+                    return reject(error);
+                } 
+                else {
+                    connection.end();
+                    return resolve(results); 
+                    }
+        });
+        });
+    }
 // the above brings in promises and MySQL 
 // call back function - it returns 3 things if there is an error, if it succeeded then it gets the results 
 // if there is an error first of all we make sure that the connection is terminated and then it returns
@@ -56,6 +80,7 @@ function getTasks() {
 // fields is an array of fields that you are querying from the database 
 module.exports = {
  getTasks,
- deleteTasks
+ deleteTasks,
+ saveTasks
 }
 

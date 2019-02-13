@@ -1,12 +1,30 @@
 const serverless = require('serverless-http');
 const express = require('express');
 const app = express();
+app.use(express.json());
 
 const databaseService = require('./databaseservice');
 
 app.get('/tasks', function (request, response) {
 
   databaseService.getTasks()
+  .then(function(tasks) {
+    //we got the Tasks ok
+    response.json(tasks);
+
+  })
+  .catch (function (error) {
+    // soemthing went weong when getting the tasks
+    response.status(500);
+    response.json(error);
+  });
+
+})
+
+app.post('/tasks', function (request, response) {
+
+  const description = request.body.description;
+  databaseService.saveTasks(description)
   .then(function(results) {
     //we got the Tasks ok
     response.json(results);
@@ -17,7 +35,6 @@ app.get('/tasks', function (request, response) {
     response.status(500);
     response.json(error);
   });
-
 })
 
 app.delete('/tasks/:taskId', function (request, response) {
