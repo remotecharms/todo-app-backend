@@ -8,39 +8,24 @@ function getDatabaseConnection() {
         database: process.env.RDS_DATABASE
     });
 }
+//getDatabaseConntection function estabilishes the connection to the database
+//it's a JSON object with keys: host, user, password and database
 //environment variables - you wouldn't hard code the password or the username, because anyone could connect to the database
 // with the creditentials. Used for security and allows code to flex for the enviornment e.g. Dev vs Prod etc. 
 function getTasks() {
     const connection = getDatabaseConnection();
-    return new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
         connection.query("SELECT * FROM Tasks", function(error, results, fields) {
             if (error) {
                 connection.destroy();
                 return reject(error);
             } 
             else {
-                connection.end();
-                return resolve(results);
-            }
-        });
-    });
-}
-
-    function deleteTasks(taskId) {
-        const connection = getDatabaseConnection();
-
-        return new Promise(function(resolve, reject) {
-            connection.query("DELETE FROM Tasks WHERE TaskId =?", taskId, function(error, results, fields) {
-                if (error) {
-                    connection.destroy();
-                    return reject(error);
-                } 
-                else {
-                    connection.end();
-                    return resolve(results);
-                }
+                connection.end()
+                    return resolve(results);  
+            }                
             });
-        });
+    });
 }
 
     function saveTasks(description){
@@ -60,12 +45,32 @@ function getTasks() {
                     return reject(error);
                 } 
                 else {
-                    connection.end();
-                    return resolve(results); 
-                    }
-        });
+                    connection.end(function () {
+                        return resolve(results);
+                    }); 
+                }
+            });
         });
     }
+
+   function deleteTasks(taskId) {
+        const connection = getDatabaseConnection();
+
+        return new Promise(function(resolve, reject) {
+            connection.query("DELETE FROM Tasks WHERE TaskId =?", taskId, function(error, results, fields) {
+                if (error) {
+                    connection.destroy();
+                    return reject(error);
+                } 
+                else {
+                    connection.end(function () {
+                        return resolve(results);
+                    });
+                };
+            });
+        });
+    }
+
 // the above brings in promises and MySQL 
 // call back function - it returns 3 things if there is an error, if it succeeded then it gets the results 
 // if there is an error first of all we make sure that the connection is terminated and then it returns
