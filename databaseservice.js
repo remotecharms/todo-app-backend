@@ -53,6 +53,23 @@ function getTasks() {
         });
     }
 
+    function doneTasks(taskId) {
+        const connection = getDatabaseConnection();
+
+        return new Promise(function(resolve, reject) {
+            connection.query("UPDATE Tasks SET Completed = TRUE TaskId =?", taskId, function(error, results, fields) {
+                if (error) {
+                    connection.destroy();
+                    return reject(error);
+                } 
+                else {
+                    connection.end(function () {
+                        return resolve(results);
+                    });
+                };
+            });
+        });
+    }
    function deleteTasks(taskId) {
         const connection = getDatabaseConnection();
 
@@ -86,6 +103,7 @@ function getTasks() {
 module.exports = {
  getTasks,
  deleteTasks,
- saveTasks
+ saveTasks,
+ doneTasks
 }
 

@@ -56,4 +56,20 @@ app.delete('/tasks/:taskId', function (request, response) {
   });
 })
 
+app.put('/tasks/:taskId', function (request, response) {
+
+  const taskId = request.params.taskId
+  databaseService.doneTasks(taskId)
+  .then(function(results) {
+    //we got the Tasks ok
+    response.json(results);
+
+  })
+  .catch (function (error) {
+    // soemthing went weong when getting the tasks
+    response.status(500);
+    response.json(error);
+  });
+})
+
 module.exports.handler = serverless(app);
